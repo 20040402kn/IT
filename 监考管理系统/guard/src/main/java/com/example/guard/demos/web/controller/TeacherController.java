@@ -61,7 +61,7 @@ public class TeacherController {
         model.addAttribute("teacher", teacher);
         return "teacher-info";
     }
-
+    //教师信息更新
     @PostMapping("/teacher/update")
     public String updateTeacher(@RequestParam Long id, @RequestParam String username, @RequestParam String password, @RequestParam String name, @RequestParam String gender, @RequestParam String phone, @RequestParam String subject, RedirectAttributes redirectAttributes) {
         Teacher teacher = teacherService.findById(id);
