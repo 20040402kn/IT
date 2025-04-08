@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>管理员登录</title>
+  <link rel="stylesheet" th:href="@{/plugins/elementui/index.css}">
+  <link rel="stylesheet" th:href="@{/plugins/font-awesome/css/font-awesome.min.css}">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+  <script th:src="@{/js/vue.js}"></script>
+  <script th:src="@{/plugins/elementui/index.js}"></script>
+  <script th:src="@{/js/axios-0.18.0.js}"></script>
+
+  <style>
+    body {
+      background-color: #ffffff; /* 白色背景 */
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column; /* 垂直排列 */
+      justify-content: center; /* 内容垂直居中 */
+      align-items: center; /* 内容水平居中 */
+      height: 100vh;
+      background-image: url('/images/img.png'); /* 使用图片作为背景 */
+      background-size: cover; /* 使背景图片覆盖整个视口 */
+      background-position: center; /* 背景图片居中 */
+      background-repeat: no-repeat; /* 防止背景图片重复 */
+      color: #333; /* 默认文本颜色 */
+    }
+
+    h1 {
+      color: #004d40; /* 深绿色标题 */
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 2.5em;
+    }
+
+    .login-form {
+      background-color: rgba(255, 255, 255, 0.9); /* 半透明白色表单背景 */
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      width: 300px;
+      text-align: center; /* 确保表单内容居中 */
+      transition: transform 0.3s;
+    }
+
+    .login-form:hover {
+      transform: translateY(-10px);
+    }
+  </style>
+</head>
+<body>
+<h1>欢迎使用监考管理系统，请登录！</h1>
+<div id="app" class="login-form">
+  <el-form :model="loginForm" :rules="rules" ref="loginForm" label-width="80px">
+    <el-form-item label="用户名" prop="username">
+      <el-input v-model="loginForm.username"></el-input>
+    </el-form-item>
+    <el-form-item label="密码" prop="password">
+      <el-input type="password" v-model="loginForm.password" @keyup.enter.native="submitForm('loginForm')"></el-input>
+    </el-form-item>
+    <el-form-item>
+      <el-button type="primary" @click="submitForm('loginForm')">登录</el-button>
+    </el-form-item>
+  </el-form>
+</div>
+
+<div class="select-container">
+  <label for="role">你还可以选择其他身份登录：</label>
+  <select id="role">
+    <option value="admin">管理员</option>
+    <option value="teacher">教师</option>
+    <option value="student">学生</option>
+  </select>
+  <button class="custom-button" onclick="redirectToLogin()">确定</button>
+</div>
+
+<script>
+  var app = new Vue({
+    el: '#app',
+    data: {
+      loginForm: {
+        username: '',
+        password: ''
+      },
+      rules: {
+        username: [
+          { required: true, message: '请输入用户名', trigger: 'blur' }
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' }
+        ]
+      }
+    },
+    methods: {
+      submitForm(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            const formData = new FormData();
+            formData.append('username', this.loginForm.username);
+            formData.append('password', this.loginForm.password);
+
+            axios.post('/admin/login', formData, {
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+              }
+            })
+                    .then(response => {
+                      if (response.data.success) {
+                        window.location.href = response.data.redirectUrl;
+                      } else {
+                        this.$message.error(response.data.message);
+                      }
+                    })
+                    .catch(error => {
+                      console.log(error);
+                      this.$message.error('登录失败');
+                    });
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      }
+    }
+  });
+
+  function redirectToLogin() {
+    var role = document.getElementById('role').value;
+    if (role === 'admin') {
+      window.location.href = '/admin/login';
+    } else if (role === 'teacher') {
+      window.location.href = '/teacher/login';
+    } else if (role === 'student') {
+      window.location.href = '/student/login';
+    }
+  }
+</script>
+</body>
+</html>

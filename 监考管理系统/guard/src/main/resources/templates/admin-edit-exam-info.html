@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>编辑监考信息</title>
+    <link rel="stylesheet" th:href="@{/elementui/index.css}">
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/vue.js}"></script>
+    <script type="text/javascript" th:src="@{/js/axios-0.18.0.js}"></script>
+    <script type="text/javascript" th:src="@{/elementui/index.js}"></script>
+    <style>
+        body {
+            background-color: #f4f4f9; /* 浅灰色背景 */
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column; /* 垂直排列 */
+        }
+        h1 {
+            color: #333333; /* 深灰色标题 */
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        form {
+            background-color: #ffffff; /* 白色表单背景 */
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            text-align: left; /* 使表单内容左对齐 */
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555555; /* 深灰色标签 */
+            font-weight: bold;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #cccccc; /* 浅灰色边框 */
+            border-radius: 4px;
+            transition: border-color 0.3s, transform 0.3s;
+        }
+        input[type="text"]:focus {
+            border-color: #007bff; /* 蓝色边框 */
+            outline: none;
+        }
+        input[type="text"]:hover {
+            border-color: #007bff; /* 蓝色边框 */
+            transform: scale(1.02); /* 缩放效果 */
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff; /* 蓝色按钮 */
+            color: #ffffff; /* 白色文字 */
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3; /* 深蓝色按钮 */
+            transform: translateY(-2px);
+        }
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #007bff; /* 蓝色链接 */
+            text-decoration: none;
+            transition: text-decoration 0.3s;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .icon {
+            margin-right: 5px;
+        }
+        /* 提示框样式 */
+        .alert {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px;
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            border-radius: 4px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .alert.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+<h1>编辑考试信息</h1>
+<form th:action="@{/admin/edit-exam-info/{id}(id=${exam.id})}" method="post" th:object="${exam}" id="examForm">
+    <div class="form-group">
+        <label for="subject"><i class="icon">&#128214;</i> 考试科目:</label>
+        <input type="text" id="subject" name="subject" th:field="*{subject}">
+    </div>
+    <div class="form-group">
+        <label for="teacherId"><i class="icon">&#128100;</i> 监考教师ID:</label>
+        <input type="text" id="teacherId" name="teacherId" th:field="*{teacherIds}" th:value="${#strings.listJoin(exam.teacherIds, ',')}" placeholder="例如: 1,2,3">
+    </div>
+
+    <div class="form-group">
+        <label for="time"><i class="icon">&#128337;</i> 开始时间:</label>
+        <input type="text" id="time" name="time" th:field="*{time}">
+    </div>
+    <div class="form-group">
+        <label for="end_time"><i class="icon">&#128337;</i> 结束时间:</label>
+        <input type="text" id="end_time" name="end_time" th:field="*{end_time}">
+    </div>
+    <div class="form-group">
+        <label for="location"><i class="icon">&#128205;</i> 地点:</label>
+        <input type="text" id="location" name="location" th:field="*{location}">
+    </div>
+    <button type="submit">保存</button>
+</form>
+<a href="/admin/manage-exam-info">返回</a>
+
+<div class="alert" id="alertBox"></div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('examForm');
+        const alertBox = document.getElementById('alertBox');
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // 阻止表单默认提交行为
+
+            // 使用 Fetch API 提交表单数据
+            const formData = new FormData(form);
+            fetch(form.action, {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showAlert(data.message);
+                        // 可以选择重定向到管理页面
+                        window.location.href = '/admin/manage-exam-info';
+                    } else {
+                        showAlert(data.message);
+                    }
+                })
+                .catch(error => {
+                    showAlert('保存失败，请重试');
+                    console.error('There was an error!', error);
+                });
+        });
+
+        function showAlert(message) {
+            alertBox.textContent = message;
+            alertBox.classList.add('show');
+
+            // 3秒后自动隐藏提示框
+            setTimeout(function() {
+                hideAlert();
+            }, 3000);
+        }
+
+        function hideAlert() {
+            alertBox.classList.remove('show');
+        }
+    });
+</script>
+</body>
+</html>

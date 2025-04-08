@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>编辑教师</title>
+    <style>
+        body {
+            background-color: #f4f4f9; /* 浅灰色背景 */
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column; /* 垂直排列 */
+        }
+        h1 {
+            color: #333333; /* 深灰色标题 */
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        form {
+            background-color: #ffffff; /* 白色表单背景 */
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            text-align: left; /* 使表单内容左对齐 */
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555555; /* 深灰色标签 */
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #cccccc; /* 浅灰色边框 */
+            border-radius: 4px;
+            transition: border-color 0.3s;
+        }
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border-color: #007bff; /* 蓝色边框 */
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff; /* 蓝色按钮 */
+            color: #ffffff; /* 白色文字 */
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3; /* 深蓝色按钮 */
+            transform: translateY(-2px);
+        }
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #007bff; /* 蓝色链接 */
+            text-decoration: none;
+            transition: text-decoration 0.3s;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .icon {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+<h1>编辑教师</h1>
+<form action="#" th:action="@{/admin/edit-teacher/{id}(id=${teacher.id})}" method="post">
+    <div class="form-group">
+        <label for="username"><i class="icon">&#128100;</i> 用户名:</label>
+        <input type="text" id="username" name="username" th:value="${teacher.username}" required>
+    </div>
+    <div class="form-group">
+        <label for="password"><i class="icon">&#128273;</i> 密码:</label>
+        <input type="password" id="password" name="password" th:value="${teacher.password}" required>
+    </div>
+    <div class="form-group">
+        <label for="name"><i class="icon">&#128101;</i> 姓名:</label>
+        <input type="text" id="name" name="name" th:value="${teacher.name}" required>
+    </div>
+    <div class="form-group">
+        <label for="gender"><i class="icon">&#128103;</i> 性别:</label>
+        <input type="text" id="gender" name="gender" th:value="${teacher.gender}" required>
+    </div>
+    <div class="form-group">
+        <label for="phone"><i class="icon">&#128222;</i> 电话:</label>
+        <input type="text" id="phone" name="phone" th:value="${teacher.phone}" required>
+    </div>
+    <div class="form-group">
+        <label for="subject"><i class="icon">&#128214;</i> 科目:</label>
+        <input type="text" id="subject" name="subject" th:value="${teacher.subject}" required>
+    </div>
+    <button type="submit">保存</button>
+</form>
+<a href="/admin/manage-teachers">返回</a>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>管理员控制台</title>
+    <style>
+        body {
+            background-color: #f4f4f9; /* 浅灰色背景 */
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #ffffff; /* 白色背景 */
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .sidebar a {
+            display: block;
+            text-align: left;
+            margin: 10px 0;
+            color: #007bff; /* 蓝色链接 */
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            transition: background-color 0.3s, transform 0.3s;
+            background-color: #ffffff; /* 白色背景 */
+        }
+        .sidebar a:hover {
+            background-color: #0056b3; /* 深蓝色背景 */
+            transform: translateY(-2px);
+        }
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+            background-color: #ffffff; /* 白色背景 */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .icon {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="sidebar">
+    <h1>管理员控制台</h1>
+    <a href="#" onclick="loadContent('admin-import-exam-info.html')"><i class="icon">&#128203;</i> 导入监考信息</a>
+    <a href="#" onclick="loadContent('admin-manage-exam-info.html')"><i class="icon">&#128221;</i> 管理监考信息</a>
+    <a href="#" onclick="loadContent('admin-manage-teachers.html')"><i class="icon">&#128100;</i> 管理教师信息</a>
+    <a href="/admin/logout"><i class="icon">&#128645;</i> 退出登录</a>
+</div>
+<div class="content" id="content">
+    <!-- 内容将在这里动态加载 -->
+</div>
+
+<script>
+    function loadContent(url) {
+        fetch(url)
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('content').innerHTML = data;
+            })
+            .catch(error => console.error('Error loading content:', error));
+    }
+
+    // 默认加载第一个页面
+    loadContent('admin-import-exam-info.html');
+</script>
+</body>
+</html>

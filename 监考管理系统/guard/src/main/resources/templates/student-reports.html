@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>举报信息</title>
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #0056b3;
+            --text-color: #333333;
+            --light-gray: #f4f4f9;
+            --dark-gray: #555555;
+            --border-color: #ddd;
+            --focus-color: #007bff;
+            --background-color: #e0f7fa;
+            --nav-bar-color: #1a1212;
+            --nav-bar-hover-color: #ddf3fa;
+        }
+        body {
+            background-color: var(--background-color);
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: linear-gradient(to bottom, #e0f7fa, #ffffff);
+        }
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        .reported-exams-container {
+            width: 90%;
+            max-width: 800px;
+            margin-top: 20px;
+            height: 70vh; /* 设置容器高度 */
+            overflow-y: auto; /* 添加垂直滚动条 */
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        .reported-exam-item {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+        }
+        .reported-exam-item:hover {
+            transform: translateY(-5px);
+        }
+        .reported-exam-item h2 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        .exam-details {
+            margin-bottom: 10px;
+        }
+        .exam-item {
+            margin-bottom: 5px;
+            color: var(--text-color);
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .exam-item span {
+            color: var(--dark-gray);
+            font-weight: normal;
+        }
+        .report-images img {
+            max-width: 100%;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        @media (max-width: 768px) {
+            .reported-exam-item {
+                padding: 15px;
+            }
+            .exam-item {
+                font-size: 14px;
+            }
+            .reported-exams-container {
+                height: 60vh; /* 调整高度以适应小屏幕 */
+            }
+        }
+    </style>
+</head>
+<body>
+<h1>您被举报的信息为：</h1>
+<div class="reported-exams-container" th:each="exam : ${reportedExams}">
+    <div class="reported-exam-item">
+        <h2>考试科目: <span th:text="${exam.subject}"></span></h2>
+        <div class="exam-details">
+            <div class="exam-item">开始时间: <span th:text="${exam.time}"></span></div>
+            <div class="exam-item">结束时间: <span th:text="${exam.end_time}"></span></div>
+            <div class="exam-item">地点: <span th:text="${exam.location}"></span></div>
+            <div class="exam-item">举报学生: <span th:text="${exam.reportedStudentUsername}"></span></div>
+            <div class="exam-item">举报描述: <span th:text="${exam.reportDescription}"></span></div>
+        </div>
+        <div class="report-images">
+            <img th:src="@{${exam.reportImage1}}" th:if="${exam.reportImage1 != null}" alt="举报图片1">
+            <img th:src="@{${exam.reportImage2}}" th:if="${exam.reportImage2 != null}" alt="举报图片2">
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>添加考试公告</title>
+    <link rel="stylesheet" th:href="@{/plugins/elementui/index.css}">
+    <link rel="stylesheet" th:href="@{/plugins/font-awesome/css/font-awesome.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script th:src="@{/js/vue.js}"></script>
+    <script th:src="@{/plugins/elementui/index.js}"></script>
+    <script th:src="@{/js/axios-0.18.0.js}"></script>
+    <!-- 引入 Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="mb-4">添加考试公告</h1>
+    <form th:action="@{/admin/add-exam-announcement}" method="post" th:object="${announcement}" class="needs-validation" novalidate>
+        <div class="form-group">
+            <label for="title">标题:</label>
+            <input type="text" id="title" name="title" th:field="*{title}" class="form-control" required>
+            <div class="invalid-feedback">
+                请输入标题。
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="content">内容:</label>
+            <textarea id="content" name="content" th:field="*{content}" class="form-control" rows="5" required></textarea>
+            <div class="invalid-feedback">
+                请输入内容。
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">添加公告</button>
+    </form>
+</div>
+
+<!-- 引入 Bootstrap JS 和依赖 -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    // 禁用表单提交按钮直到表单验证通过
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            var forms = document.getElementsByClassName('needs-validation');
+            var validation = Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>
+</body>
+</html>

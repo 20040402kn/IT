@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>学生信息</title>
+  <style>
+    :root {
+      --primary-color: #007bff; /* 主要蓝色 */
+      --secondary-color: #0056b3; /* 较深的蓝色 */
+      --text-color: #333333;
+      --light-gray: #f4f4f9;
+      --dark-gray: #555555;
+      --border-color: #ddd;
+      --focus-color: #007bff;
+      --background-color: #ffffff; /* 白色背景 */
+      --nav-bar-color: #007bff; /* 蓝色导航栏 */
+      --nav-bar-hover-color: #ddf3fa; /* 浅蓝色悬停效果 */
+    }
+
+    body {
+      background-color: var(--background-color);
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-image: linear-gradient(to bottom, #ffffff, #ffffff); /* 渐变背景 */
+    }
+
+    h1 {
+      color: #000000; /* 修改为黑色 */
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    .info-container, .exam-container, .form-container, .report-container, .reported-exams-container {
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+      text-align: center;
+      margin-top: 20px;
+      border: 1px solid var(--border-color); /* 添加边框 */
+    }
+
+    .info-item, .exam-item, .form-item, .report-item, .reported-exam-item {
+      margin-bottom: 10px;
+      color: var(--text-color);
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .nav-bar {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 40px;
+      width: 100%;
+      position: fixed;
+      top: 0;
+      background-color: var(--nav-bar-color);
+      z-index: 5000;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      padding: 20px 0;
+    }
+
+    .nav-bar button {
+      background-color: var(--nav-bar-color);
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      margin: 0 15px;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+      font-size: 18px;
+    }
+
+    .nav-bar button:hover {
+      background-color: var(--nav-bar-hover-color);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .content {
+      margin-top: 100px;
+    }
+
+    .info-container, .exam-container, .form-container, .report-container, .reported-exams-container {
+      transition: transform 0.3s;
+    }
+
+    .info-container:hover, .exam-container:hover, .form-container:hover, .report-container:hover, .reported-exams-container:hover {
+      transform: translateY(-5px);
+    }
+
+    .info-item span, .exam-item span, .form-item span, .report-item span, .reported-exam-item span {
+      color: var(--dark-gray);
+      font-weight: normal;
+    }
+
+    .form-item input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid var(--border-color);
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+
+    .form-item input:focus {
+      border-color: var(--focus-color);
+      outline: none;
+    }
+
+    .form-item button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 5px;
+      background-color: var(--primary-color);
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .form-item button:hover {
+      background-color: var(--secondary-color);
+    }
+
+    .report-images img {
+      max-width: 100%;
+      margin-bottom: 10px;
+    }
+
+    .reported-exams-container {
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    .reported-exam-item {
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+      border: 1px solid var(--border-color); /* 添加边框 */
+    }
+
+    .reported-exam-item h2 {
+      color: var(--primary-color);
+      margin-bottom: 10px;
+    }
+
+    .reported-exam-item .exam-details {
+      margin-bottom: 10px;
+    }
+
+    .reported-exam-item .exam-details .exam-item {
+      margin-bottom: 5px;
+    }
+
+    .reported-exam-item .report-images img {
+      max-width: 100%;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+<div class="nav-bar">
+  <button onclick="showSection('info')">个人信息</button>
+  <button onclick="showSection('exam')">考试信息</button>
+  <button onclick="showSection('form')">修改信息</button>
+  <button onclick="location.href='/student/reports'">举报信息</button>
+</div>
+
+<div class="content">
+  <!-- 个人信息部分 -->
+  <div id="info-section">
+    <h1>您的个人信息为：</h1>
+    <div class="info-container">
+      <div class="info-item">用户名: <span th:text="${student.username}"></span></div>
+      <div class="info-item">姓名: <span th:text="${student.name}"></span></div>
+      <div class="info-item">性别: <span th:text="${student.gender}"></span></div>
+      <div class="info-item">年龄: <span th:text="${student.age}"></span></div>
+      <div class="info-item">专业: <span th:text="${student.major}"></span></div>
+      <div class="info-item">电话: <span th:text="${student.phone}"></span></div>
+    </div>
+  </div>
+
+  <!-- 考试信息部分 -->
+  <div id="exam-section" class="hidden">
+    <h1>您的考试信息为：</h1>
+    <div class="exam-container" th:each="exam : ${studentExams}">
+      <div class="exam-item">科目: <span th:text="${exam.exam.subject}"></span></div>
+      <div class="exam-item">开始时间: <span th:text="${exam.exam.time}"></span></div>
+      <div class="exam-item">结束时间: <span th:text="${exam.exam.end_time}"></span></div>
+      <div class="exam-item">地点: <span th:text="${exam.exam.location}"></span></div>
+    </div>
+  </div>
+
+  <div id="form-section" class="hidden">
+    <div class="form-container">
+      <form action="/student/updateInfo" method="post">
+        <div class="form-item">
+          <label for="username">用户名:</label>
+          <input type="text" id="username" name="username" th:value="${student.username}">
+        </div>
+        <div class="form-item">
+          <label for="password">密码:</label>
+          <input type="text" id="password" name="password" th:value="${student.password}">
+        </div>
+        <div class="form-item">
+          <label for="name">姓名:</label>
+          <input type="text" id="name" name="name" th:value="${student.name}">
+        </div>
+        <div class="form-item">
+          <label for="gender">性别:</label>
+          <input type="text" id="gender" name="gender" th:value="${student.gender}">
+        </div>
+        <div class="form-item">
+          <label for="age">年龄:</label>
+          <input type="number" id="age" name="age" th:value="${student.age}">
+        </div>
+        <div class="form-item">
+          <label for="major">专业:</label>
+          <input type="text" id="major" name="major" th:value="${student.major}">
+        </div>
+        <div class="form-item">
+          <label for="phone">电话:</label>
+          <input type="tel" id="phone" name="phone" th:value="${student.phone}">
+        </div>
+        <div class="form-item">
+          <button type="submit">提交</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>
+
+<script>  function showSection(section) {
+  document.getElementById('info-section').classList.toggle('hidden', section !== 'info');
+  document.getElementById('exam-section').classList.toggle('hidden', section !== 'exam');
+  document.getElementById('form-section').classList.toggle('hidden', section !== 'form');
+  document.getElementById('reports-section').classList.toggle('hidden', section !== 'reports');
+}
+// 默认显示个人信息部分
+document.addEventListener('DOMContentLoaded', function() {
+  showSection('info');
+});
+</script>
+</body>
+</html>

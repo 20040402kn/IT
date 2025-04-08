@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>导入监考信息</title>
+    <link rel="stylesheet" th:href="@{/plugins/elementui/index.css}">
+    <link rel="stylesheet" th:href="@{/plugins/font-awesome/css/font-awesome.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script th:src="@{/js/vue.js}"></script>
+    <script th:src="@{/plugins/elementui/index.js}"></script>
+    <script th:src="@{/js/axios-0.18.0.js}"></script>
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #0056b3;
+            --text-color: #333333;
+            --light-gray: #f4f4f9;
+            --dark-gray: #555555;
+            --border-color: #ddd;
+            --focus-color: #007bff;
+        }
+
+        body {
+            background: linear-gradient(135deg, #ddf3fa, #ddf3fa); /* 修改为浅蓝色的渐变色 */
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            background-color: rgba(255, 255, 255, 0.9); /* 更高的透明度 */
+            border-right: 1px solid var(--border-color);
+            width: 250px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s; /* 添加过渡效果 */
+        }
+
+        .sidebar h1 {
+            color: var(--text-color);
+            margin-bottom: 20px;
+        }
+
+        .sidebar a {
+            display: block;
+            text-align: left;
+            margin: 10px 0;
+            color: var(--primary-color);
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            transition: background-color 0.3s, transform 0.3s;
+            position: relative; /* 添加相对定位以便伪元素定位 */
+        }
+
+        .sidebar a:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            color: white; /* 链接悬停时文字颜色变为白色 */
+        }
+
+        .sidebar a i {
+            margin-right: 10px; /* 图标和文字之间增加间距 */
+            font-size: 38px; /* 增加图标大小 */
+        }
+
+        .sidebar a::after {
+            content: '\2192'; /* 添加右箭头 */
+            position: absolute;
+            right: 2px; /* 箭头距离右侧的距离 */
+            top: 50%;
+            transform: translateY(-20%);
+            color: var(--primary-color);
+            transition: color 0.3s; /* 添加颜色过渡效果 */
+        }
+
+        .sidebar a:hover::after {
+            color: white; /* 悬停时箭头颜色变为白色 */
+        }
+
+        .sidebar a:not(:last-child) {
+            border-bottom: 1px solid var(--light-gray); /* 添加分隔线 */
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown a {
+            display: block;
+            text-align: left;
+            margin: 10px 0;
+            color: var(--primary-color);
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            transition: background-color 0.3s, transform 0.3s;
+            position: relative; /* 添加相对定位以便伪元素定位 */
+        }
+
+        .dropdown a:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            color: white; /* 链接悬停时文字颜色变为白色 */
+        }
+
+        .dropdown a i {
+            margin-right: 10px; /* 图标和文字之间增加间距 */
+            font-size: 38px; /* 增加图标大小 */
+        }
+
+        .dropdown a::after {
+            content: '\2193'; /* 添加下箭头 */
+            position: absolute;
+            right: 2px; /* 箭头距离右侧的距离 */
+            top: 50%;
+            transform: translateY(-20%);
+            color: var(--primary-color);
+            transition: color 0.3s; /* 添加颜色过渡效果 */
+        }
+
+        .dropdown a:hover::after {
+            color: white; /* 悬停时箭头颜色变为白色 */
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: left;
+            position: relative; /* 添加相对定位以便伪元素定位 */
+        }
+
+        .dropdown-content a:hover {
+            background-color: #0750a1;
+        }
+
+        .dropdown-content a::after {
+            content: '\2192'; /* 添加右箭头 */
+            position: absolute;
+            right: 2px; /* 箭头距离右侧的距离 */
+            top: 50%;
+            transform: translateY(-20%);
+            color: var(--primary-color);
+            transition: color 0.3s; /* 添加颜色过渡效果 */
+        }
+
+        .dropdown-content a:hover::after {
+            color: white; /* 悬停时箭头颜色变为白色 */
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            color: var(--text-color);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        form {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            text-align: center;
+            position: relative;
+            transition: transform 0.3s; /* 添加过渡效果 */
+        }
+
+        form:hover {
+            transform: translateY(-5px); /* 悬停时稍微上移 */
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--dark-gray);
+            font-weight: bold;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="file"]:focus {
+            border-color: var(--focus-color);
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* 输入框聚焦时的阴影效果 */
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+        }
+
+        button:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* 按钮悬停时的阴影效果 */
+        }
+
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: text-decoration 0.3s, color 0.3s;
+        }
+
+        a:hover {
+            text-decoration: underline;
+            color: var(--secondary-color); /* 链接悬停时颜色变为次级颜色 */
+        }
+
+        .drop-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 4px;
+            padding: 50px; /* 增加内边距以放大区域 */
+            text-align: center;
+            margin-bottom: 20px;
+            transition: border-color 0.3s, transform 0.3s;
+            width: 100%; /* 确保宽度占满父容器 */
+            box-sizing: border-box; /* 确保内边距和边框包含在宽度内 */
+        }
+
+        .drop-area.highlight {
+            border-color: var(--focus-color);
+            transform: scale(1.02); /* 高亮时稍微放大 */
+        }
+
+        .drop-area p {
+            margin: 0;
+            color: var(--dark-gray);
+        }
+
+        /* 增加响应式设计 */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                flex-direction: row;
+                justify-content: space-around;
+                align-items: center;
+                padding: 10px;
+            }
+
+            .sidebar a {
+                margin: 5px;
+            }
+
+            .main-content {
+                width: 100%;
+            }
+
+            form {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="sidebar">
+    <h1>管理员控制台</h1>
+    <a href="/admin/import-exam-info"><i class="icon">&#128203;</i> 导入考试信息</a>
+    <a href="/admin/manage-exam-info"><i class="icon">&#128221;</i> 管理考试信息</a>
+    <a href="/admin/manage-teachers"><i class="icon">&#128100;</i> 管理教师信息</a>
+    <div class="dropdown">
+        <a href="/admin/exam-announcements"><i class="icon">&#128276;</i> 考试信息公告</a>
+        <div class="dropdown-content">
+            <a href="/admin/exam-notifications">违纪处理</a>
+            <a href="/admin/exam-status">考场状态</a>
+        </div>
+    </div>
+    <a href="/admin/logout"><i class="icon">&#128645;</i> 退出登录</a>
+</div>
+<div class="main-content">
+    <h1>导入监考信息</h1>
+    <form action="#" th:action="@{/admin/import-exam-info}" method="post" enctype="multipart/form-data" id="uploadForm">
+        <div class="drop-area" id="dropArea">
+            <p>将文件拖放到此处，或点击选择文件</p>
+            <input type="file" id="file" name="file" required style="display: none;">
+        </div>
+        <button type="submit">导入</button>
+    </form>
+    <a href="/admin/logout">退出登录</a>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const dropArea = document.getElementById('dropArea');
+        const fileInput = document.getElementById('file');
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight(e) {
+            dropArea.classList.add('highlight');
+        }
+
+        function unhighlight(e) {
+            dropArea.classList.remove('highlight');
+        }
+
+        dropArea.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files);
+        }
+
+        dropArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', () => {
+            handleFiles(fileInput.files);
+        });
+
+        function handleFiles(files) {
+            ([...files]).forEach(uploadFile);
+        }
+
+        function uploadFile(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/admin/import-exam-info', true);
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    alert('文件上传成功');
+                } else {
+                    alert('文件上传失败');
+                }
+            };
+            xhr.send(formData);
+        }
+    });
+</script>
+</body>
+</html>
