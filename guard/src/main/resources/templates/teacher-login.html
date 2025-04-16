@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>教师登录</title>
+  <link rel="stylesheet" href="elementui/index.css">
+  <script type="text/javascript" src="js/jquery.min.js"></script>
+  <script type="text/javascript" src="js/vue.js"></script>
+  <script type="text/javascript" src="js/axios-0.18.0.js"></script>
+  <script type="text/javascript" src="elementui/index.js"></script>
+  <style>
+    body {
+      background-color: #ffffff; /* 白色背景 */
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column; /* 垂直排列 */
+      justify-content: center; /* 内容垂直居中 */
+      align-items: center; /* 内容水平居中 */
+      height: 100vh;
+      background-image: url('/images/img.png'); /* 使用图片作为背景 */
+      background-size: cover; /* 使背景图片覆盖整个视口 */
+      background-position: center; /* 背景图片居中 */
+      background-repeat: no-repeat; /* 防止背景图片重复 */
+    }
+
+    h1 {
+      color: #004d40; /* 深绿色标题 */
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 2.5em;
+    }
+
+    form {
+      background-color: rgba(255, 255, 255, 0.9); /* 半透明白色表单背景 */
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      width: 300px;
+      text-align: center; /* 确保表单内容居中 */
+      transition: transform 0.3s;
+    }
+
+    form:hover {
+      transform: translateY(-10px);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+      color: #004d40; /* 深绿色标签 */
+      font-weight: bold;
+      font-size: 1.2em;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: calc(100% - 22px); /* 减去边框和内边距的宽度 */
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #004d40; /* 深绿色边框 */
+      border-radius: 6px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    input[type="text"]:focus,
+    input[type="password"]:focus {
+      border-color: #00695c; /* 更深的绿色边框 */
+      box-shadow: 0 0 8px rgba(0, 105, 92, 0.6);
+      outline: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #004d40; /* 深绿色按钮 */
+      color: #ffffff; /* 白色文字 */
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s, transform 0.3s;
+    }
+
+    button:hover {
+      background-color: #00695c; /* 更深的绿色按钮 */
+      transform: translateY(-2px);
+    }
+
+    .error {
+      color: red;
+      margin-top: 10px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+<h1>欢迎使用考试管理系统，请登录！</h1>
+<form action="#" th:action="@{/teacher/login}" method="post">
+  <label for="username">用户名:</label>
+  <input type="text" id="username" name="username" required>
+  <label for="password">密码:</label>
+  <input type="password" id="password" name="password" required>
+  <button type="submit">登录</button>
+</form>
+<div th:if="${error}" class="error" th:text="${error}"></div>
+</body>
+</html>

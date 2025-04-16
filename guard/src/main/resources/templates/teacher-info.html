@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>教师信息</title>
+  <style>
+    :root {
+      --primary-color: #007bff;
+      --secondary-color: #0056b3;
+      --text-color: #333333;
+      --light-gray: #f4f4f9;
+      --dark-gray: #555555;
+      --border-color: #ddd;
+      --focus-color: #007bff;
+      --logout-color: #dc3545; /* 新增退出登录按钮的颜色 */
+      --logout-hover-color: #c82333; /* 新增退出登录按钮的悬停颜色 */
+    }
+    body {
+      background-color: var(--light-gray);
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+      color: var(--text-color);
+    }
+    h1 {
+      color: var(--text-color);
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+    form {
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 80%;
+      max-width: 400px;
+      margin: 0 auto;
+      text-align: center;
+      position: relative;
+      transition: transform 0.3s;
+    }
+    form:hover {
+      transform: translateY(-5px);
+    }
+    label {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      color: var(--dark-gray);
+      font-weight: bold;
+      text-align: left;
+    }
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      transition: border-color 0.3s;
+      font-size: 16px;
+    }
+    input[type="text"]:focus,
+    input[type="password"]:focus {
+      border-color: var(--focus-color);
+      outline: none;
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: var(--primary-color);
+      color: #ffffff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+      font-size: 16px;
+      margin-top: 20px;
+    }
+    button:hover {
+      background-color: var(--secondary-color);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    }
+    a {
+      color: var(--primary-color);
+      text-decoration: none;
+      margin-top: 20px;
+      text-align: center;
+      display: block;
+      font-size: 16px;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .button-container {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+      gap: 10px; /* 设置按钮之间的间距 */
+    }
+    .return-button {
+      background-color: #6c757d;
+      color: #fff;
+      padding: 12px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+      font-size: 16px;
+    }
+    .return-button:hover {
+      background-color: #545b62;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    }
+    .logout-button {
+      background-color: var(--logout-color);
+      color: #fff;
+      padding: 12px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+      font-size: 16px;
+    }
+    .logout-button:hover {
+      background-color: var(--logout-hover-color);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    }
+    .icon {
+      margin-right: 5px;
+    }
+    .form-group {
+      width: 100%;
+      margin-bottom: 15px;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+<h1>教师信息</h1>
+<form action="#" th:action="@{/teacher/update}" method="post">
+  <div class="form-group">
+    <label for="id"><i class="icon">&#128203;</i> ID:</label>
+    <input type="text" id="id" name="id" th:value="${teacher.id}" readonly>
+  </div>
+  <div class="form-group">
+    <label for="username"><i class="icon">&#128100;</i> 用户名:</label>
+    <input type="text" id="username" name="username" th:value="${teacher.username}" required>
+  </div>
+  <div class="form-group">
+    <label for="password"><i class="icon">&#128274;</i> 密码:</label>
+    <input type="password" id="password" name="password" th:value="${teacher.password}" required>
+  </div>
+  <div class="form-group">
+    <label for="name"><i class="icon">&#128100;</i> 姓名:</label>
+    <input type="text" id="name" name="name" th:value="${teacher.name}" required>
+  </div>
+  <div class="form-group">
+    <label for="gender"><i class="icon">&#9794;&#65039;</i> 性别:</label>
+    <input type="text" id="gender" name="gender" th:value="${teacher.gender}" required>
+  </div>
+  <div class="form-group">
+    <label for="phone"><i class="icon">&#128222;</i> 电话:</label>
+    <input type="text" id="phone" name="phone" th:value="${teacher.phone}" required>
+  </div>
+  <div class="form-group">
+    <label for="subject"><i class="icon">&#128203;</i> 科目:</label>
+    <input type="text" id="subject" name="subject" th:value="${teacher.subject}" required>
+  </div>
+  <button type="submit">保存</button>
+</form>
+<div class="button-container">
+  <a href="/teacher/logout" class="logout-button">退出登录</a>
+  <a href="/teacher/exam-info/{teacherId}" th:href="@{/teacher/exam-info/{teacherId}(teacherId=${teacher.id})}" class="return-button">返回</a>
+</div>
+</body>
+</html>

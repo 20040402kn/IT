@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>违纪处理</title>
+    <style>
+        body {
+            background-color: #f4f4f9; /* 轻灰色背景 */
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .container {
+            width: 95%; /* 增加宽度 */
+            max-width: 1200px; /* 增加最大宽度 */
+            margin: 20px auto;
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        h1 {
+            color: #0750a1; /* 深蓝色标题 */
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 30px;
+        }
+        .table-container {
+            max-height: 500px; /* 设置最大高度 */
+            overflow-y: auto; /* 添加垂直滚动条 */
+            overflow-x: auto; /* 添加水平滚动条 */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            white-space: nowrap; /* 防止内容换行 */
+        }
+        th {
+            background-color: #007bff; /* 深蓝色表头背景 */
+            color: #ffffff; /* 白色文字 */
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9; /* 偶数行背景色 */
+        }
+        tr:hover {
+            background-color: #f1f1f1; /* 鼠标悬停时的背景色 */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+        a {
+            color: #007bff; /* 深蓝色链接 */
+            text-decoration: none;
+            margin-right: 10px;
+            transition: color 0.3s, transform 0.3s;
+        }
+        a:hover {
+            color: #0056b3; /* 更深的蓝色 */
+            text-decoration: underline;
+            transform: translateY(-2px);
+        }
+        .report-details {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .report-details h2 {
+            margin-top: 0;
+            color: #0750a1;
+        }
+        .report-details p {
+            margin: 5px 0;
+        }
+        .report-images img {
+            max-width: 100%;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>违纪处理</h1>
+    <div class="table-container">
+        <table>
+            <thead>
+            <tr>
+                <th>考试科目</th>
+                <th>开始时间</th>
+                <th>结束时间</th>
+                <th>地点</th>
+                <th>举报学生</th>
+                <th>举报描述</th>
+                <th>举报图片</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="exam : ${exams}">
+                <td th:text="${exam.subject}"></td>
+                <td th:text="${exam.time}"></td>
+                <td th:text="${exam.end_time}"></td>
+                <td th:text="${exam.location}"></td>
+                <td th:text="${exam.reportedStudentUsername}"></td>
+                <td th:text="${exam.reportDescription}"></td>
+                <td>
+                    <div class="report-images">
+                        <img th:src="@{${exam.reportImage1}}" th:if="${exam.reportImage1 != null}" alt="举报图片1">
+                        <img th:src="@{${exam.reportImage2}}" th:if="${exam.reportImage2 != null}" alt="举报图片2">
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

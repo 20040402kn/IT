@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>添加监考信息</title>
+    <style>
+        body {
+            background-color: #f4f4f9; /* 浅灰色背景 */
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 600px;
+        }
+        h1 {
+            color: #333333; /* 深灰色标题 */
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        form {
+            background-color: #ffffff; /* 白色表单背景 */
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+            color: #555555; /* 深灰色标签 */
+            font-weight: bold;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #cccccc; /* 浅灰色边框 */
+            border-radius: 4px;
+            transition: border-color 0.3s;
+        }
+        input[type="text"]:focus {
+            border-color: #007bff; /* 蓝色边框 */
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff; /* 蓝色按钮 */
+            color: #ffffff; /* 白色文字 */
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3; /* 深蓝色按钮 */
+            transform: translateY(-2px);
+        }
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #007bff; /* 蓝色链接 */
+            text-decoration: none;
+            transition: text-decoration 0.3s;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .form-group {
+            width: 100%;
+            margin-bottom: 15px;
+        }
+        .icon {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>添加考试信息</h1>
+    <form th:action="@{/admin/add-exam-info}" method="post" th:object="${exam}">
+        <div class="form-group">
+            <label for="subject"><i class="icon">&#128203;</i> 考试科目:</label>
+            <input type="text" id="subject" name="subject" th:field="*{subject}">
+        </div>
+        <div class="form-group">
+            <label for="teacherId"><i class="icon">&#128100;</i> 监考教师ID:</label>
+            <input type="text" id="teacherId" name="teacherId" th:field="*{teacherIds}" th:value="${#strings.listJoin(exam.teacherIds, ',')}" placeholder="例如: 1,2,3">
+        </div>
+        <div class="form-group">
+            <label for="time"><i class="icon">&#128337;</i> 开始时间:</label>
+            <input type="text" id="time" name="time" th:field="*{time}">
+        </div>
+        <div class="form-group">
+            <label for="end_time"><i class="icon">&#128337;</i> 结束时间:</label>
+            <input type="text" id="end_time" name="end_time" th:field="*{end_time}">
+        </div>
+        <div class="form-group">
+            <label for="location"><i class="icon">&#128205;</i> 地点:</label>
+            <input type="text" id="location" name="location" th:field="*{location}">
+        </div>
+        <button type="submit">添加</button>
+    </form>
+    <a href="/admin/manage-exam-info">返回</a>
+</div>
+</body>
+</html>

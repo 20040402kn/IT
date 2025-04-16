@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>考场状态</title>
+    <link rel="stylesheet" th:href="@{/plugins/elementui/index.css}">
+    <link rel="stylesheet" th:href="@{/plugins/font-awesome/css/font-awesome.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script th:src="@{/js/vue.js}"></script>
+    <script th:src="@{/plugins/elementui/index.js}"></script>
+    <script th:src="@{/js/axios-0.18.0.js}"></script>
+    <style>
+        body {
+            background-color: #f4f4f9;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .header {
+            background-color: #409EFF;
+            color: #ffffff;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .header .nav-menu {
+            display: flex;
+        }
+        .header .nav-menu a {
+            color: #ffffff;
+            text-decoration: none;
+            margin-left: 20px;
+            padding: 10px 15px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .header .nav-menu a:hover {
+            background-color: #66b1ff;
+        }
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .exam-room {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .exam-room h2 {
+            margin-bottom: 20px;
+        }
+        .exam-room .exams {
+            margin-bottom: 20px;
+        }
+        .exam-room .exams h3 {
+            margin-bottom: 10px;
+        }
+        .exam-room .exams p {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <div class="header">
+        <h1>管理员控制台</h1>
+        <div class="nav-menu">
+            <a href="/admin/import-exam-info"><i class="fa fa-file-import"></i> 导入考试信息</a>
+            <a href="/admin/manage-exam-info"><i class="fa fa-edit"></i> 管理考试信息</a>
+            <a href="/admin/manage-teachers"><i class="fa fa-users"></i> 管理教师信息</a>
+            <a href="/admin/exam-announcements"><i class="fa fa-bullhorn"></i> 考试信息公告</a>
+            <a href="/admin/logout"><i class="fa fa-sign-out-alt"></i> 退出登录</a>
+        </div>
+    </div>
+    <div class="content">
+        <h1>考场状态</h1>
+        <div th:each="entry : ${examsByRoom}" class="exam-room">
+            <h2>教学楼: <span th:text="${entry.key.building}"></span>, 教室: <span th:text="${entry.key.room_number}"></span></h2>
+            <p>容量: <span th:text="${entry.key.capacity}"></span></p>
+            <div class="exams">
+                <h3>考试信息</h3>
+                <div th:each="exam : ${entry.value}">
+                    <h4 th:text="${exam.subject}"></h4>
+                    <p>时间: <span th:text="${exam.time}"></span></p>
+                    <p>结束时间: <span th:text="${exam.end_time}"></span></p>
+                    <p>教师: <span th:text="${exam.teacherIds}"></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

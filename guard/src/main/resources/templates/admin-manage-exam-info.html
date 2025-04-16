@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>管理考试信息</title>
+  <link rel="stylesheet" th:href="@{/plugins/elementui/index.css}">
+  <link rel="stylesheet" th:href="@{/plugins/font-awesome/css/font-awesome.min.css}">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+  <script th:src="@{/js/vue.js}"></script>
+  <script th:src="@{/plugins/elementui/index.js}"></script>
+  <script th:src="@{/js/axios-0.18.0.js}"></script>
+  <style>
+    :root {
+      --primary-color: #007bff;
+      --secondary-color: #0056b3;
+      --text-color: #333333;
+      --light-gray: #f4f4f9;
+      --dark-gray: #555555;
+      --border-color: #ddd;
+      --focus-color: #007bff;
+    }
+    body {
+      background-color: #f4f4f9; /* 浅灰色背景 */
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      height: 100vh;
+    }
+    .sidebar {
+      background-color: rgba(255, 255, 255, 0.9); /* 更高的透明度 */
+      border-right: 1px solid var(--border-color);
+      width: 250px;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s; /* 添加过渡效果 */
+    }
+
+    .sidebar h1 {
+      color: var(--text-color);
+      margin-bottom: 20px;
+    }
+
+    .sidebar a {
+      display: block;
+      text-align: left;
+      margin: 10px 0;
+      color: var(--primary-color);
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      transition: background-color 0.3s, transform 0.3s;
+      position: relative; /* 添加相对定位以便伪元素定位 */
+    }
+
+    .sidebar a:hover {
+      background-color: var(--secondary-color);
+      transform: translateY(-2px);
+      color: white; /* 链接悬停时文字颜色变为白色 */
+    }
+
+    .sidebar a i {
+      margin-right: 10px; /* 图标和文字之间增加间距 */
+      font-size: 38px; /* 增加图标大小 */
+    }
+
+    .sidebar a::after {
+      content: '\2192'; /* 添加右箭头 */
+      position: absolute;
+      right: 2px; /* 箭头距离右侧的距离 */
+      top: 50%;
+      transform: translateY(-20%);
+      color: var(--primary-color);
+      transition: color 0.3s; /* 添加颜色过渡效果 */
+    }
+
+    .sidebar a:hover::after {
+      color: white; /* 悬停时箭头颜色变为白色 */
+    }
+
+    .sidebar a:not(:last-child) {
+      border-bottom: 1px solid var(--light-gray); /* 添加分隔线 */
+    }
+
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .dropdown a {
+      display: block;
+      text-align: left;
+      margin: 10px 0;
+      color: var(--primary-color);
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      transition: background-color 0.3s, transform 0.3s;
+      position: relative; /* 添加相对定位以便伪元素定位 */
+    }
+
+    .dropdown a:hover {
+      background-color: var(--secondary-color);
+      transform: translateY(-2px);
+      color: white; /* 链接悬停时文字颜色变为白色 */
+    }
+
+    .dropdown a i {
+      margin-right: 10px; /* 图标和文字之间增加间距 */
+      font-size: 38px; /* 增加图标大小 */
+    }
+
+    .dropdown a::after {
+      content: '\2193'; /* 添加下箭头 */
+      position: absolute;
+      right: 2px; /* 箭头距离右侧的距离 */
+      top: 50%;
+      transform: translateY(-20%);
+      color: var(--primary-color);
+      transition: color 0.3s; /* 添加颜色过渡效果 */
+    }
+
+    .dropdown a:hover::after {
+      color: white; /* 悬停时箭头颜色变为白色 */
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #f9f9f9;
+      min-width: 160px;
+      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+      z-index: 1;
+    }
+
+    .dropdown-content a {
+      color: black;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+      text-align: left;
+      position: relative; /* 添加相对定位以便伪元素定位 */
+    }
+
+    .dropdown-content a:hover {
+      background-color: #0750a1;
+    }
+
+    .dropdown-content a::after {
+      content: '\2192'; /* 添加右箭头 */
+      position: absolute;
+      right: 2px; /* 箭头距离右侧的距离 */
+      top: 50%;
+      transform: translateY(-20%);
+      color: var(--primary-color);
+      transition: color 0.3s; /* 添加颜色过渡效果 */
+    }
+
+    .dropdown-content a:hover::after {
+      color: white; /* 悬停时箭头颜色变为白色 */
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+
+    .content {
+      flex-grow: 1;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 1000px; /* 增加最大宽度 */
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: var(--text-color);
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    form {
+      background-color: #ffffff; /* 白色表单背景 */
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      margin-bottom: 20px;
+      text-align: center;
+      position: relative;
+      transition: transform 0.3s; /* 添加过渡效果 */
+    }
+
+    form:hover {
+      transform: translateY(-5px); /* 悬停时稍微上移 */
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+      color: var(--dark-gray);
+      font-weight: bold;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      transition: border-color 0.3s;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--focus-color);
+      outline: none;
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* 输入框聚焦时的阴影效果 */
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: var(--primary-color);
+      color: #ffffff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    }
+
+    button:hover {
+      background-color: var(--secondary-color);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* 按钮悬停时的阴影效果 */
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+
+    th, td {
+      padding: 15px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: var(--primary-color); /* 纯蓝色表头背景 */
+      color: #ffffff; /* 白色文字 */
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9; /* 偶数行背景色 */
+    }
+
+    tr:hover {
+      background-color: #f1f1f1; /* 鼠标悬停时的背景色 */
+    }
+
+    a {
+      color: #0000FF; /* 纯蓝色链接 */
+      text-decoration: none;
+      margin-right: 10px;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .action-links {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .pagination a {
+      color: var(--primary-color);
+      text-decoration: none;
+      margin: 0 10px;
+      padding: 5px 10px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      transition: background-color 0.3s, transform 0.3s;
+    }
+
+    .pagination a:hover {
+      background-color: var(--secondary-color);
+      transform: translateY(-2px);
+    }
+
+    .pagination span {
+      margin: 0 10px;
+      color: var(--text-color);
+    }
+
+    /* 新增按钮样式 */
+    .button {
+      display: inline-block;
+      padding: 12px 5px; /* 调整为与按钮相同的内边距 */
+      margin: 5px;
+      color: #fff;
+      text-align: center;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+      width: 100px; /* 设置固定宽度 */
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .button.edit {
+      background-color: #158be8; /* 橙色 */
+    }
+
+    .button.edit:hover {
+      background-color: #137bce; /* 橙色加深 */
+    }
+
+    .button.delete {
+      background-color: #dc3545; /* 红色 */
+    }
+
+    .button.delete:hover {
+      background-color: #c82333; /* 红色加深 */
+    }
+
+    .button.add {
+      background-color: #dc3545; /* 红色 */
+    }
+
+    .button.add:hover {
+      background-color: #c82333; /* 红色加深 */
+    }
+
+    .button.logout {
+      background-color: #6c757d; /* 灰色 */
+    }
+
+    .button.logout:hover {
+      background-color: #545b62; /* 灰色加深 */
+    }
+
+    .status-cell {
+      padding: 12px 5px; /* 调整为与按钮相同的内边距 */
+      border-radius: 4px;
+      text-align: center;
+      width: 100px; /* 设置固定宽度 */
+      display: inline-block; /* 确保内联块元素 */
+    }
+
+    .status-cell.red {
+      background-color: #f85363; /* 红色 */
+      color: white;
+    }
+
+    .status-cell.green {
+      background-color: #03912f; /* 绿色 */
+      color: white;
+    }
+
+  </style>
+</head>
+<body>
+<div class="sidebar">
+  <h1>管理员控制台</h1>
+  <a href="/admin/import-exam-info"><i class="icon">&#128203;</i> 导入考试信息</a>
+  <a href="/admin/manage-exam-info"><i class="icon">&#128221;</i> 管理考试信息</a>
+  <a href="/admin/manage-teachers"><i class="icon">&#128100;</i> 管理教师信息</a>
+  <div class="dropdown">
+    <a href="/admin/exam-announcements"><i class="icon">&#128276;</i> 考试信息公告</a>
+    <div class="dropdown-content">
+      <a href="/admin/exam-notifications">违纪处理</a>
+      <a href="/admin/exam-status">考场状态</a>
+    </div>
+  </div>
+  <a href="/admin/logout"><i class="icon">&#128645;</i> 退出登录</a>
+</div>
+<div class="content">
+  <h1>管理考试信息</h1>
+  <form action="#" th:action="@{/admin/search-exams}" method="get">
+    <label for="searchTerm">查询条件:</label>
+    <input type="text" id="searchTerm" name="searchTerm" placeholder="考试科目/考试人员ID(请以“,”分隔)">
+    <button type="submit">查询</button>
+  </form>
+  <form action="#" th:action="@{/admin/batch-delete-exam-info}" method="post">
+    <table>
+      <thead>
+      <tr>
+        <th><input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)"></th>
+        <th>考试科目</th>
+        <th>监考人员ID</th>
+        <th>开始时间</th>
+        <th>结束时间</th>
+        <th>地点</th>
+        <th>状态</th>
+        <th>操作</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="exam : ${exams}">
+        <td><input type="checkbox" name="examIds" th:value="${exam.id}"></td>
+        <td th:text="${exam.subject}"></td>
+        <td th:text="${#strings.listJoin(exam.teacherIds, ', ')}"></td>
+        <td th:text="${exam.time}"></td>
+        <td th:text="${exam.end_time}"></td>
+        <td th:text="${exam.location}"></td>
+        <td></td>
+        <td>
+          <a th:href="@{/admin/edit-exam-info/{id}(id=${exam.id})}" class="button edit">编辑</a>
+          <a th:href="@{/admin/delete-exam-info/{id}(id=${exam.id})}" class="button delete">删除</a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+    <button type="submit">批量删除</button>
+  </form>
+  <div class="pagination">
+    <a th:href="@{/admin/manage-exam-info(page=${currentPage - 1})}"
+       th:if="${currentPage != null && currentPage > 0}">上一页</a>
+    <span th:text="${currentPage != null and totalPages != null} ?
+    '第 ' + (${currentPage} + 1) + ' 页 / 总 ' + ${totalPages} + ' 页' : '第 1 页 / 总 1 页'"></span>
+    <a th:href="@{/admin/manage-exam-info(page=${currentPage + 1})}"
+       th:if="${currentPage != null && currentPage + 1 < totalPages}">下一页</a>
+  </div>
+
+  <div class="action-links">
+    <a href="/admin/add-exam-info" class="button add">添加考试信息</a>
+    <a href="/admin/logout" class="button logout">退出登录</a>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var exams = document.querySelectorAll('tbody tr');
+    exams.forEach(function(exam) {
+      var examTimeCell = exam.querySelector('td:nth-child(4)');
+      var examTime = examTimeCell.textContent;
+      var statusCell = exam.querySelector('td:nth-child(7)');
+      if (moment(examTime).isBefore(moment())) {
+        statusCell.innerHTML = '<span class="status-cell green">已考完</span>';
+      } else {
+        statusCell.innerHTML = '<span class="status-cell red">未考完</span>';
+      }
+    });
+  });
+
+  function toggleSelectAll(source) {
+    var checkboxes = document.querySelectorAll('input[name="examIds"]');
+    for (var i = 0; i < checkboxes.length; i++) {
+      checkboxes[i].checked = source.checked;
+    }
+  }
+</script>
+</body>
+</html>

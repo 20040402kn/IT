@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>监考信息</title>
+    <link rel="stylesheet" th:href="@{/plugins/elementui/index.css}">
+    <link rel="stylesheet" th:href="@{/plugins/font-awesome/css/font-awesome.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <script th:src="@{/js/vue.js}"></script>
+    <script th:src="@{/plugins/elementui/index.js}"></script>
+    <script th:src="@{/js/axios-0.18.0.js}"></script>
+    <style>
+        body {
+            background-color: #f4f4f9; /* 轻灰色背景 */
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        h1 {
+            color: #0750a1; /* 深蓝色标题 */
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 30px;
+        }
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            margin: 5px;
+            color: #fff;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+        }
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+        .button.edit {
+            background-color: #158be8; /* 深蓝色 */
+        }
+        .button.edit:hover {
+            background-color: #137bce; /* 更深的蓝色 */
+        }
+        .button.logout {
+            background-color: #dc3545; /* 红色 */
+        }
+        .button.logout:hover {
+            background-color: #c82333; /* 更深的红色 */
+        }
+        .button i {
+            margin-right: 5px;
+        }
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+        }
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .alert-danger {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        .table-container {
+            max-height: 400px; /* 设置最大高度 */
+            overflow-y: auto; /* 启用垂直滚动条 */
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #007bff; /* 深蓝色表头背景 */
+            color: #ffffff; /* 白色文字 */
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9; /* 偶数行背景色 */
+        }
+        tr:hover {
+            background-color: #f1f1f1; /* 鼠标悬停时的背景色 */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+        .status-cell {
+            padding: 12px 5px;
+            border-radius: 4px;
+            text-align: center;
+            width: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .status-cell.red {
+            background-color: #f85363; /* 红色 */
+            color: white;
+        }
+        .status-cell.green {
+            background-color: #03912f; /* 绿色 */
+            color: white;
+        }
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+            }
+            .button-container {
+                flex-direction: column;
+            }
+            .button {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>您的考试信息为：</h1>
+    <div class="button-container">
+        <a th:href="@{/teacher/info(id=${teacher.id})}" class="button edit"><i class="fas fa-user-edit"></i> 查看和修改个人信息</a>
+        <a href="/teacher/logout" class="button logout"><i class="fas fa-sign-out-alt"></i> 退出登录</a>
+    </div>
+    <div th:if="${success}" class="alert alert-success" role="alert">
+        <span th:text="${success}"></span>
+    </div>
+    <div th:if="${error}" class="alert alert-danger" role="alert">
+        <span th:text="${error}"></span>
+    </div>
+    <div class="table-container">
+        <table>
+            <thead>
+            <tr>
+                <th>考试科目</th>
+                <th>开始时间</th>
+                <th>结束时间</th>
+                <th>地点</th>
+                <th>状态</th> <!-- 新增状态列 -->
+                <th>举报</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="exam : ${exams}">
+                <td th:text="${exam.subject}"></td>
+                <td th:text="${exam.time}"></td>
+                <td th:text="${exam.end_time}"></td>
+                <td th:text="${exam.location}"></td>
+                <td class="status-cell" th:id="'status-' + ${exam.id}"></td> <!-- 新增状态单元格 -->
+                <td>
+                    <a th:href="@{/teacher/report-details(examId=${exam.id})}" class="button edit">举报</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script>
+    console.log('index.js 加载成功');
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM 加载完成'); // 添加调试信息
+
+        var exams = document.querySelectorAll('tbody tr');
+        exams.forEach(function(exam) {
+            var examTimeCell = exam.querySelector('td:nth-child(2)'); // 开始时间单元格
+            var examTime = examTimeCell.textContent;
+            var statusCell = exam.querySelector('.status-cell'); // 状态单元格
+
+            if (moment(examTime).isBefore(moment())) {
+                statusCell.innerHTML = '<span class="status-cell green">已考完</span>';
+            } else {
+                statusCell.innerHTML = '<span class="status-cell red">未考完</span>';
+            }
+        });
+    });
+</script>
+</body>
+</html>
